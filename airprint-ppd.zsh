@@ -87,11 +87,11 @@ fi
 
 # Checking if printer is reachable
 ipaddress=$(echo $PRINTER_URL | grep -Eo '[0-9]+[.][0-9]+[.][0-9]+[.][0-9]+')
-echo "Printer '$OUTPUT_NAME' IP address is : $ipaddress"
-echo "Checking if $OUTPUT_NAME is reachable"
+echo "Printer '$OUTPUT_NAME' IP is : $ipaddress"
+# echo "Checking if $OUTPUT_NAME is reachable"
 if ping -c 1 $ipaddress &> /dev/null
 then
-  echo "$OUTPUT_NAME is reachable, continuing"
+  # echo "$OUTPUT_NAME is reachable, continuing"
 else
   echo "exit with 0, Printer $OUTPUT_NAME is not reachable"
   exit
@@ -137,7 +137,7 @@ if [ "${PPD_OUTPUT_DIR}" = "" ] && [ $EUID -ne 0 ]; then
     exit 6
 fi
 
-echo "Creating a temporary working directory..."
+## echo "Creating a temporary working directory..."
 TEMP_DIR=`mktemp -d`
 
 if [ $? -ne 0 ]; then
@@ -145,11 +145,11 @@ if [ $? -ne 0 ]; then
     exit 500
 fi
 
-echo "Created temporary directory at: ${TEMP_DIR}"
+## echo "Created temporary directory at: ${TEMP_DIR}"
 PPD_FILE="${TEMP_DIR}/printer.ppd"
 
 echo "Fetching the PPD using ipp2ppd..."
-"${IPP2PPD}" "${PRINTER_URL}" "${AIRPRINT_PPD}" > "${PPD_FILE}"
+"${IPP2PPD}" "${PRINTER_URL}" "${AIRPRINT_PPD}" > "${PPD_FILE}" &>/dev/null
 
 if [ ! -s "${PPD_FILE}" ]; then
     echo "ERROR: Fetched PPD is empty..."
@@ -195,7 +195,7 @@ for ICON_URL in $PRINTER_ICONS
 do
     IMAGE_FILE_NAME=`basename $ICON_URL`
     
-    echo "Downloading the printer image file ${IMAGE_FILE_NAME}..."
+    ## echo "Downloading the printer image file ${IMAGE_FILE_NAME}..."
     
     if [ "$SECURE_MODE" = true ]; then
         curl -s -o "${ICON_DIR}/${IMAGE_FILE_NAME}" $ICON_URL
@@ -218,10 +218,10 @@ do
     else
         IMAGE_RESOLUTION=`file "${ICON_DIR}/${IMAGE_FILE_NAME}" | awk -F "," '{print $2}' | tr -d ' '`
         
-        echo "This image has the following dimensions: $IMAGE_RESOLUTION"    
+        ## echo "This image has the following dimensions: $IMAGE_RESOLUTION"    
         SIZE=`echo ${IMAGE_RESOLUTION} | awk -F "x" '{print $1}'`
 
-        echo "Adding this image to the temporary macOS iconset..."
+        ## echo "Adding this image to the temporary macOS iconset..."
         case "$SIZE" in
             16)
                 mv "${ICON_DIR}/${IMAGE_FILE_NAME}" "${IMAGESET_DIR}/icon_16x16.png"
@@ -259,28 +259,28 @@ ICON_FILE_COUNT=`ls -1 "${IMAGESET_DIR}"  | wc -l | tr -d " "`
 
 if [ $ICON_FILE_COUNT -gt 0 ];
 then
-    echo "The iconset now contains $ICON_FILE_COUNT single images."
+    ## echo "The iconset now contains $ICON_FILE_COUNT single images."
 
-    echo "Creating an icns file from the fetched printer images..."
+    ## echo "Creating an icns file from the fetched printer images..."
     iconutil -c icns -o "${ICNS_TMP_FILE}" "${IMAGESET_DIR}"
 
-    echo "Saving the icns file to ${DEFAULT_ICON_PATH}..."
+    ## echo "Saving the icns file to ${DEFAULT_ICON_PATH}..."
     cp "${ICNS_TMP_FILE}" "${DEFAULT_ICON_PATH}"
 
     if [ "${ICNS_COPY_DIR}" != "" ]; then
-        echo "Saving a copy of the icns file to ${ICNS_COPY_DIR}/${OUTPUT_NAME}.icns..."
+        ## echo "Saving a copy of the icns file to ${ICNS_COPY_DIR}/${OUTPUT_NAME}.icns..."
         cp "${ICNS_TMP_FILE}" "${ICNS_COPY_DIR}/${OUTPUT_NAME}.icns"
     fi
 else
     echo "The iconset does not contain any image files, so we will skip all other icon handling..."
 fi
 
-echo "Saving the PPD to ${PPD_OUTPUT_DIR}/${OUTPUT_NAME}.ppd..."
+## echo "Saving the PPD to ${PPD_OUTPUT_DIR}/${OUTPUT_NAME}.ppd..."
 cp "${PPD_FILE}" "${PPD_OUTPUT_DIR}/${OUTPUT_NAME}.ppd"
 
 echo "Removing the temporary directory..."
 rm -rf "${TEMP_DIR}"
 
-/usr/sbin/lpadmin -p ${OUTPUT_NAME} -D "${OUTPUT_NAME}" -E -v ${PRINTER_URL} -P "${PPD_OUTPUT_DIR}/${OUTPUT_NAME}.ppd" -o printer-is-shared=false
+/usr/sbin/lpadmin -p ${OUTPUT_NAME} -D "${OUTPUT_NAME}" -E -v ${PRINTER_URL} -P "${PPD_OUTPUT_DIR}/${OUTPUT_NAME}.ppd" -o printer-is-shared=false &> /dev/null
 
 exit 0
