@@ -281,7 +281,7 @@ fi
 cp "${PPD_FILE}" "${PPD_OUTPUT_DIR}/${OUTPUT_NAME}.ppd"
 
 echo "Removing the temporary directory..."
-rm -rf "${TEMP_DIR}"
+## rm -rf "${TEMP_DIR}"
 
 /usr/sbin/lpadmin -p ${OUTPUT_NAME} -D "${OUTPUT_NAME}" -E -v ${PRINTER_URL} -P "${PPD_OUTPUT_DIR}/${OUTPUT_NAME}.ppd" -o printer-is-shared=false &> /dev/null
 
