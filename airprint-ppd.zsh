@@ -265,9 +265,9 @@ then
     iconutil -c icns -o "${ICNS_TMP_FILE}" "${IMAGESET_DIR}"
 
     ## echo "Saving the icns file to ${DEFAULT_ICON_PATH}..."
-    chmod +w "${DEFAULT_ICON_PATH}"
+    chmod +w /Library/Printers/Icons
     cp "${ICNS_TMP_FILE}" "${DEFAULT_ICON_PATH}"
-    chmod -w "${DEFAULT_ICON_PATH}"
+    chmod -w /Library/Printers/Icons
 
     if [ "${ICNS_COPY_DIR}" != "" ]; then
         ## echo "Saving a copy of the icns file to ${ICNS_COPY_DIR}/${OUTPUT_NAME}.icns..."
