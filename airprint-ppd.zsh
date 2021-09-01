@@ -148,7 +148,7 @@ fi
 ## echo "Created temporary directory at: ${TEMP_DIR}"
 PPD_FILE="${TEMP_DIR}/printer.ppd"
 
-echo "Fetching the PPD using ipp2ppd..."
+# echo "Fetching the PPD using ipp2ppd..."
 "${IPP2PPD}" "${PRINTER_URL}" "${AIRPRINT_PPD}" > "${PPD_FILE}" &>/dev/null
 
 if [ ! -s "${PPD_FILE}" ]; then
@@ -166,7 +166,7 @@ if [ "${OUTPUT_NAME}" = "" ]; then
     OUTPUT_NAME="${MODEL_NAME}"
 fi
 
-echo "Fetching the IPP attributes using ipptool..."
+# echo "Fetching the IPP attributes using ipptool..."
 "${IPPTOOL}" -tv "${PRINTER_URL}" get-printer-attributes.test > "${IPPINFO_FILE}"
 
 if [ $? -ne 0 ]; then
