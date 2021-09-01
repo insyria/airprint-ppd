@@ -186,7 +186,6 @@ PRINTER_ICONS_STRING=`get_ippinfo_string "${IPPINFO_FILE}" "printer-icons (1setO
 PRINTER_ICONS=(${(s:,:)PRINTER_ICONS_STRING})
 
 ICON_DIR="${TEMP_DIR}/icons"
-chmod +w ${ICON_DIR}
 IMAGESET_DIR="${ICON_DIR}/printer.iconset"
 ICNS_TMP_FILE="${ICON_DIR}/printer.icns"
 
@@ -266,9 +265,7 @@ then
     iconutil -c icns -o "${ICNS_TMP_FILE}" "${IMAGESET_DIR}"
 
     ## echo "Saving the icns file to ${DEFAULT_ICON_PATH}..."
-    chmod +w /Library/Printers/Icons
     cp "${ICNS_TMP_FILE}" "${DEFAULT_ICON_PATH}"
-    chmod -w /Library/Printers/Icons
 
     if [ "${ICNS_COPY_DIR}" != "" ]; then
         ## echo "Saving a copy of the icns file to ${ICNS_COPY_DIR}/${OUTPUT_NAME}.icns..."
