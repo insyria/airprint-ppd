@@ -186,6 +186,7 @@ PRINTER_ICONS_STRING=`get_ippinfo_string "${IPPINFO_FILE}" "printer-icons (1setO
 PRINTER_ICONS=(${(s:,:)PRINTER_ICONS_STRING})
 
 ICON_DIR="${TEMP_DIR}/icons"
+chmod +w ${ICON_DIR}
 IMAGESET_DIR="${ICON_DIR}/printer.iconset"
 ICNS_TMP_FILE="${ICON_DIR}/printer.icns"
 
