@@ -25,12 +25,10 @@ AIRPRINT_PPD="/System/Library/Frameworks/ApplicationServices.framework/Versions/
 usage() {
     cat <<EOF
 Usage: ${SCRIPT_NAME} -p printer_url [-i icns_copy_dir] [-o ppd_output_dir] [-n name] [-s]
-
 This script queries the given printer url for a PPD and handles the icon generation, so that it may
 be run as root. A printer icon will be generated and saved to the default location with the expected
 name containing the printers UUID. You may optionally save a copy of the icons file to a different 
 location.
-
     -p printer_url        IPP URL, for example ipp://FNCYPRINT.local or ipp://192.168.1.244:443, mandatory
     -i icns_copy_dir      Output dir for copy of icon, required if not running with root privileges
     -o ppd_output_dir     Output dir for PPD, required if not running with root privileges.
@@ -38,7 +36,6 @@ location.
     -n name               Name to be used for icon and ppd file, defaults to queried model name
     -s                    Switch to secure mode, which won't ignore untrusted TLS certificates
     -h                    Show this usage message
-
 EOF
 }
 
@@ -86,6 +83,18 @@ if [ "${PRINTER_URL}" = "" ]; then
     echo ""
     usage
     exit 2
+fi
+
+# Checking if printer is reachable
+ipaddress=$(echo $PRINTER_URL | grep -Eo '[0-9]+[.][0-9]+[.][0-9]+[.][0-9]+')
+echo "Printer '$OUTPUT_NAME' IP address is : $ipaddress"
+echo "Checking if $OUTPUT_NAME is reachable"
+if ping -c 1 $ipaddress &> /dev/null
+then
+  echo "$OUTPUT_NAME is reachable, continuing"
+else
+  echo "exit with 0, Printer $OUTPUT_NAME is not reachable"
+  exit
 fi
 
 case "$PRINTER_URL" in
@@ -271,5 +280,7 @@ cp "${PPD_FILE}" "${PPD_OUTPUT_DIR}/${OUTPUT_NAME}.ppd"
 
 echo "Removing the temporary directory..."
 rm -rf "${TEMP_DIR}"
+
+/usr/sbin/lpadmin -p ${OUTPUT_NAME} -D "${OUTPUT_NAME}" -E -v ${PRINTER_URL} -P "${PPD_OUTPUT_DIR}/${OUTPUT_NAME}.ppd" -o printer-is-shared=false
 
 exit 0
